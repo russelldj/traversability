@@ -3,6 +3,7 @@ function [trimmed_cloud] = trim_cloud(grid_point_cloud, pc_path)
 base_name = split(pc_path, '.');
 base_name = base_name(1);
 trim_path = strcat(base_name, '_trimmed_cloud.mat');
+trim_path = trim_path{1};
 if isfile(trim_path)
     %% Load Data
     disp("Loading Trimmed Cloud")

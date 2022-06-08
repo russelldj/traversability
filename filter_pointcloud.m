@@ -5,11 +5,11 @@ base_name = base_name(1);
 ground_path = strcat(base_name, '_ground_points.txt');
 nonground_path = strcat(base_name, '_non_ground_points.txt');
 
-if isfile(ground_path) && isfile(nonground_path)
+if isfile(ground_path) && isfile(nonground_path) && false
     %% Load Datas
     disp("Loading Ground and Non-ground Point Clouds : " + base_name)
-    ground_points = importdata('pilot data/45_deg_merged_ground_points.txt');
-    nonground_points = importdata('pilot data/45_deg_merged_non_ground_points.txt');
+    ground_points = importdata(ground_path);
+    nonground_points = importdata(nonground_path);
 else
     %% Process Data
     disp("Processing Point Cloud : " + base_name)
@@ -33,8 +33,8 @@ else
     ground_points = point_cloud(ground_points_index, 1:3);
     nonground_points = point_cloud(~ground_points_index, 1:3);
 
-    save(ground_path, 'ground_points')
-    save(nonground_path, 'nonground_points')
+    save(ground_path{1}, 'ground_points')
+    save(nonground_path{1}, 'nonground_points')
 
     figure;
     pcshowpair(ground_cloud, nonground_cloud)

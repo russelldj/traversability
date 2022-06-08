@@ -21,5 +21,6 @@ trimmed_grid_cloud = trim_cloud(grid_point_cloud, data_path);
 % %% Digital Elevation Map Fuzzy Index
 plot_data=true;
 fuzzy=true;
-fuzzy_map = digital_em(trimmed_grid_cloud, plot_data, fuzzy);
+grid_size=0.3;
+fuzzy_map = digital_em(trimmed_grid_cloud, plot_data, fuzzy, grid_size);
 end

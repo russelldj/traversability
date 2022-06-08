@@ -1,8 +1,8 @@
-function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy)
+function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, grid_size)
 %% Generate DEM from point cloud
-% elevModel = pc2dem(pointCloud(traversableCloud), [0.3, 0.3]);
-elevModel = pc2dem(pointCloud(gridPtCloud(:,1:3)), [0.3, 0.3]);
-elevModel_labels = pc2dem(pointCloud([gridPtCloud(:,1:2), gridPtCloud(:,4)]), [0.3, 0.3]);
+
+elevModel = pc2dem(pointCloud(gridPtCloud(:,1:3)), [grid_size, grid_size]);
+elevModel_labels = pc2dem(pointCloud([gridPtCloud(:,1:2), gridPtCloud(:,4)]), [grid_size, grid_size]);
 
 X = 0:size(elevModel,2)-1;
 Y = 0:size(elevModel,1)-1;

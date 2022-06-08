@@ -6,7 +6,7 @@ gc_data_path = strcat(base_name, '_grid_cloud.mat');
 if isfile(gc_data_path)
     %% Load Data
     disp("Loading Grid Cloud")
-    load(gc_data_path, 'grid_point_cloud', 'grid_labels_mtx');
+    load(gc_data_path{1}, 'grid_point_cloud', 'grid_labels_mtx');
 else
     %% Process Data
     disp("Generating Grid Cloud")
@@ -33,7 +33,7 @@ else
     disp('Grid Cloud Resolution Y: ')
     disp((y_max - y_min)/fix(y_max - y_min));
 
-    if ~isempty(xLimits) && ~isempty(yLimits)
+    if ~isemptgrid_cloudy(xLimits) && ~isempty(yLimits)
         for k = progress(1:length(xLimits)-1)
             if k < length(xLimits)-1
                 idx_x = (xLimits(k) <= pc_data(:,1)) & (pc_data(:,1) < xLimits(k+1));

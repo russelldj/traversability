@@ -23,6 +23,13 @@ SafeForest Traversability Code for generating traversability maps. The descripti
 └── README.md   
 ```
 
+## Instalation
+This requires the following toolboxes
+* Lidar
+* Navigation 
+* TopoToolbox
+* Fuzzy Logic
+
 ## Usage
 1. In MATLAB add all folders and sub-folders to Path
 2. Use `generate_traersability` function to process point cloud data as :  
