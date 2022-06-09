@@ -1,9 +1,10 @@
 function [grid_point_cloud, grid_labels_mtx] = grid_cloud(pc_data, pc_path, resolution, force_reload)
-
+% Default argument
 if nargin < 4
     force_reload = true;
 end
-    
+
+% Indexes a global variable point cloud
 function points = index_cloud(inds) 
     points = pc_data(inds,:);
 end
@@ -20,58 +21,53 @@ if isfile(gc_data_path) && ~force_reload
 else
     %% Process Data
     disp("Generating Grid Cloud")
-    grid_point_cloud = [];
-    grid_labels_mtx = [];
-    grid_labels = [];
-    nLabels = 1;
-
-    % TODO vectorize
-    x_min = min(pc_data(:,1));
-    x_max = max(pc_data(:,1));
-
-    y_min = min(pc_data(:,2));
-    y_max = max(pc_data(:,2));
-
-    z_min = min(pc_data(:,3));
-    z_max = max(pc_data(:,3));
-
-    xLimits = linspace(x_min, x_max, fix((x_max - x_min)/resolution));
-    yLimits = linspace(y_min, y_max, fix((y_max - y_min)/resolution));
     
-    num_x = fix((x_max - x_min)/resolution);
-    num_y = fix((y_max - y_min)/resolution);
-    disp('Grid Cloud Resolution X, Y: ' + resolution)
+    % Compute preliminaries for gridding
+    point_mins = min(pc_data(:, 1:3), [], 1);
+    point_maxes = max(pc_data(:, 1:3), [], 1);
+    spatial_extent = transpose([point_mins ; point_maxes]);
+    num_x_y = fix((point_maxes(1:2) - point_mins(1:2))/resolution);
     
-    spatial_extent = [[x_min, x_max];[y_min, y_max];[z_min, z_max]];
-    bins = pcbin(pointCloud(pc_data(:,1:3)), [num_x,num_y,1], spatial_extent);
+    % Actually compute gridding with optimized library function
+    bins = pcbin(pointCloud(pc_data(:,1:3)), [num_x_y(1),num_x_y(1),1], spatial_extent);
+    % Obtain the points from the indices
     points_per_bin = cellfun(@index_cloud, bins,'UniformOutput', false );
-    disp(points_per_bin{200,200})
 
+    % Aggregate the information into a single array with labels
     grid_point_cloud = zeros([size(pc_data,1), 4]);
-    grid_labels_mtx = zeros(num_x, num_y);
-
+    grid_labels_mtx = zeros(num_x_y);
     num_points_added = 1;
-    index = 1;
+    label_ID = 1;
+    num_x = num_x_y(1);
+    num_y = num_x_y(2);
+
     for i=1:num_x
         for j=1:num_y
+            % Extract the points 
             current_points = points_per_bin{i,j};
             num_points = size(current_points, 1);
-            labels = ones(num_points,1)*index;
-            
+            labels = ones(num_points,1)*label_ID;
+
+            % disp(strcat("Setting num_points = ",string(num_points), " to label = ", string(index)))
+            % Set the points and labels
             grid_point_cloud(num_points_added:num_points_added+num_points-1, 1:3) = current_points(:, 1:3);
             grid_point_cloud(num_points_added:num_points_added+num_points-1, 4) = labels;
-            
-            grid_labels_mtx(i,j) = index;
+            % Fill this semi-useless variable indicating the id at each
+            % cell
+            grid_labels_mtx(i,j) = label_ID;
+            % Increment to determine where to insert
             num_points_added = num_points_added + num_points;
-            index = index+1;
+            % Increament label
+            label_ID = label_ID+1;
         end
     end
-
+  
     save(gc_data_path, 'grid_point_cloud', 'grid_labels_mtx');
 end
+figure
 
-% figure
-% pcshow(grid_point_cloud(:,1:3), gridLabels)
-% colormap("lines")
+indx =  grid_point_cloud(:,4);
+pcshow(grid_point_cloud(:,1:3), indx);
+colormap("lines")
 
 end
