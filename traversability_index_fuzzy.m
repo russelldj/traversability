@@ -1,4 +1,9 @@
-function [gridMap] = traversability_index_fuzzy(slopeScore, roughnessScore, elevModel_labels)
+function [gridMap] = traversability_index_fuzzy(slopeScore, roughnessScore, elevModel_labels, resolution)
+
+% Default arguments
+if nargin < 4
+    resolution = 1;
+end
 
 % fuzzy_data_path = 'variable data/fuzzy_dem_data.mat';
 % override = false;
@@ -97,22 +102,27 @@ disp("Calculating Index")
 roughnessScore = normalize(roughnessScore, 'range');
 slopeScore = normalize(slopeScore, 'range');
 [rows, cols] = size(roughnessScore);
-gridMap = occupancyMap(rows, cols, 0.3, 'grid');
-for i=progress(1:rows)
-    for j=1:cols
-        if ~isnan(roughnessScore(i, j))
-            if elevModel_labels(i, j) == 0
-                r = roughnessScore(i, j);
-                s = slopeScore(i, j);
-                index = evalfis(traversability_fis, [r, s]);
-                setOccupancy(gridMap, grid2local(gridMap,[i, j]), 1 - index);
-            else
-                setOccupancy(gridMap, grid2local(gridMap,[i, j]), 1);
-            end
-        else
-            setOccupancy(gridMap, grid2local(gridMap,[i, j]), 1);
-        end
-    end
-end
 
+
+flat_roughness = reshape(roughnessScore, [], 1);
+flat_slope = reshape(slopeScore, [], 1);
+flat_labels = reshape(elevModel_labels, [], 1);
+
+valid_roughness = ~isnan(flat_roughness);
+valid_slope = ~isnan(flat_slope);
+valid_labels = flat_labels == 0;
+% TODO should we be checking slope validity which wasn't done previously
+valid_inds = valid_roughness & valid_labels & valid_slope;
+
+valid_roughnesses = flat_roughness(valid_inds);
+valid_slopes = flat_slope(valid_inds);
+fis_inputs = [valid_roughnesses, valid_slopes];
+fis_outputs = evalfis(traversability_fis, fis_inputs);
+traversability_score = 1 - fis_outputs;
+
+output_index = ones(rows * cols, 1);
+output_index(valid_inds) = traversability_score;
+output_index = reshape(output_index, [rows, cols]);
+
+gridMap = occupancyMap(output_index, resolution);
 end
