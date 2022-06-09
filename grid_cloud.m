@@ -1,5 +1,11 @@
-function [grid_point_cloud, grid_labels_mtx] = grid_cloud(pc_data, pc_path, resolution, force_reload)
+function [grid_point_cloud, grid_labels_mtx] = grid_cloud(pc_data, pc_path, resolution, force_reload, crop, crop_height)
 % Default argument
+if nargin < 6
+    crop_height = 3;
+end
+if nargin < 5
+    crop = true;
+end
 if nargin < 4
     force_reload = true;
 end
@@ -8,6 +14,27 @@ end
 function points = index_cloud(inds) 
     points = pc_data(inds,:);
 end
+
+% Indexes a global variable point cloud
+% Crops points within a threshold of the highest ground point in a cell
+function valid_points = index_cloud_and_crop(inds) 
+    points = pc_data(inds,:);
+
+    ground_inds = points(:, 4) == 0;
+    ground_points = points(ground_inds, 1:4);
+    if size(ground_points, 1) == 0
+        % 
+        valid_points = zeros(0, 4);
+    else
+        heighest_ground = max(ground_points(:, 3));
+        height_above = points(:,3) - heighest_ground;
+        valid_inds = height_above < crop_height;
+        valid_points = points(valid_inds, 1:4);
+    end
+  
+end
+
+
 
 %% Dividing Point Cloud in Grid
 base_name = split(pc_path, '.');
@@ -31,8 +58,11 @@ else
     % Actually compute gridding with optimized library function
     bins = pcbin(pointCloud(pc_data(:,1:3)), [num_x_y(1),num_x_y(1),1], spatial_extent);
     % Obtain the points from the indices
-    points_per_bin = cellfun(@index_cloud, bins,'UniformOutput', false );
-
+    if crop
+        points_per_bin = cellfun(@index_cloud_and_crop, bins, 'UniformOutput', false);
+    else
+        points_per_bin = cellfun(@index_cloud, bins,'UniformOutput', false );     
+    end
     % Aggregate the information into a single array with labels
     grid_point_cloud = zeros([size(pc_data,1), 4]);
     grid_labels_mtx = zeros(num_x_y);
