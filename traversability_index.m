@@ -1,20 +1,22 @@
-function [gridMap] = traversability_index(slopeScore, roughnessScore, elevModel_labels)
-[rows, cols] = size(slopeScore);
-gridMap = occupancyMap(rows,cols,0.3,'grid');
-for k=progress(1:cols)
-    for j=1:rows
-        s1 = slopeScore(j, k);
-        s2 = roughnessScore(j, k);
-        s3 = elevModel_labels(j, k);
-        if (s1 == 1) || (s2 == 1) || (s3 == 1)
-            setOccupancy(gridMap,grid2local(gridMap,[j,k]), 1);
-        else
-            if isnan(s1)
-                setOccupancy(gridMap,grid2local(gridMap,[j,k]), 0.5);
-            else
-                setOccupancy(gridMap,grid2local(gridMap,[j,k]), s1);
-            end
-        end
-    end
+function [gridMap] = traversability_index(slopeScore, roughnessScore, elevModel_labels, resolution, nan_value)
+
+% Default values
+if nargin < 5
+    nan_value = 0.5;
 end
+
+if nargin < 4
+    resolution = 1;
+end
+
+% TODO Figure out why this clipping is needed
+output_score = min(slopeScore, 1);
+is_occupied = slopeScore == 1 | roughnessScore == 1 | elevModel_labels == 1;
+slope_is_nan = isnan(slopeScore);
+output_score(is_occupied) = 1;
+output_score(slope_is_nan) = nan_value;
+imshow(output_score)
+
+gridMap = occupancyMap(output_score, resolution);
+
 end
