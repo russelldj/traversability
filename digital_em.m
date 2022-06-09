@@ -1,8 +1,8 @@
-function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, grid_size)
+function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, resolution)
 %% Generate DEM from point cloud
 
-elevModel = pc2dem(pointCloud(gridPtCloud(:,1:3)), [grid_size, grid_size]);
-elevModel_labels = pc2dem(pointCloud([gridPtCloud(:,1:2), gridPtCloud(:,4)]), [grid_size, grid_size]);
+elevModel = pc2dem(pointCloud(gridPtCloud(:,1:3)), [resolution, resolution]);
+elevModel_labels = pc2dem(pointCloud([gridPtCloud(:,1:2), gridPtCloud(:,4)]), [resolution, resolution]);
 
 X = 0:size(elevModel,2)-1;
 Y = 0:size(elevModel,1)-1;
@@ -42,6 +42,7 @@ end
 
 %% Traversability Slope
 G = gradient8(DEM);
+% TODO This needs to ba appropriately normalized
 slopeScore = G.Z;
 %     idxNonGround = elevModel_labels == 1;
 %     slopeScore(idxNonGround) = 1;
@@ -57,7 +58,7 @@ end
 %% Traversability Index
 if ~fuzzy
     disp("Heuristic Traversability DEM")
-    gridMap = traversability_index(slopeScore, roughnessScore, elevModel_labels);
+    gridMap = traversability_index(slopeScore, roughnessScore, elevModel_labels, resolution);
     figure;
     show(gridMap);
     title("Heuristic Grid Map")
