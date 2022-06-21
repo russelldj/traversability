@@ -10,6 +10,7 @@ if nargin < 4
 end
 
 % TODO Figure out why this clipping is needed
+disp(slopeScore)
 output_score = min(slopeScore, 1);
 is_occupied = slopeScore == 1 | roughnessScore == 1 | elevModel_labels == 1;
 slope_is_nan = isnan(slopeScore);

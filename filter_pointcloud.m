@@ -1,5 +1,14 @@
-function [ground_points, nonground_points] = filter_pointcloud(pc_path)
-%% Filter Point Cloud
+function [ground_points, nonground_points] = filter_pointcloud(pc_path, show, csf)
+
+if nargin < 3
+    csf = false;
+end
+
+if nargin < 2
+    show = false;
+end
+
+%% Savepaths
 base_name = split(pc_path, '.');
 base_name = base_name(1);
 ground_path = strcat(base_name, '_ground_points.txt');
@@ -14,38 +23,33 @@ else
     %% Process Data
     disp("Processing Point Cloud : " + base_name)
     point_cloud = readmatrix(pc_path);
-
-    %% CSF
-    % tic
-    % [ground_index, nonground_index] = csf_filtering(point_cloud,3,true,1,0.5,500,0.65);
-    % toc
-    % groundPoints = point_cloud(ground_index, :);
-    % nonGroundPoints = point_cloud(nonground_index, :);
-    % ground_cloud = pointCloud(groundPoints);
-    % nonground_cloud = pointCloud(nonGroundPoints);
-
-    %% SMRF
     tic
-    full_cloud = pointCloud(point_cloud(:, 1:3));
-    [ground_points_index, nonground_cloud, ground_cloud] = segmentGroundSMRF(full_cloud);
-    toc
+    if csf
+        %% CSF
+        [ground_index, nonground_index] = csf_filtering(point_cloud,3,true,1,0.5,500,0.65);
+        groundPoints = point_cloud(ground_index, :);
+        nonGroundPoints = point_cloud(nonground_index, :);
+        ground_cloud = pointCloud(groundPoints);
+        nonground_cloud = pointCloud(nonGroundPoints);
+    else
+        %% SMRF
 
-    ground_points = point_cloud(ground_points_index, 1:3);
-    nonground_points = point_cloud(~ground_points_index, 1:3);
+        full_cloud = pointCloud(point_cloud(:, 1:3));
+        [ground_points_index, nonground_cloud, ground_cloud] = segmentGroundSMRF(full_cloud);
+
+        ground_points = point_cloud(ground_points_index, 1:3);
+        nonground_points = point_cloud(~ground_points_index, 1:3);
+    end
+    toc
 
     save(ground_path{1}, 'ground_points')
     save(nonground_path{1}, 'nonground_points')
+    
+    if show
+        figure;
+        pcshowpair(ground_cloud, nonground_cloud)
+        title('Point Cloud - Filtered')
+    end
 
-    figure;
-    pcshowpair(ground_cloud, nonground_cloud)
-    title('Point Cloud - Filtered')
-
-    % figure;
-    % subplot(1,2,1)
-    % pcshow(full_cloud(:,1:3))
-    % title('Point Cloud - Original')
-    % subplot(1,2,2)
-    % pcshow(ptCloud(:,1:3), ptCloud(:,4))
-    % title('Point Cloud - Filtered')
 end
 end

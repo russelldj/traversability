@@ -99,8 +99,8 @@ end
 
 traversability_fis = readfis("variable data/traversability_fis_new.fis");
 disp("Calculating Index")
-roughnessScore = normalize(roughnessScore, 'range');
-slopeScore = normalize(slopeScore, 'range');
+% roughnessScore = normalize(roughnessScore, 'range');
+% slopeScore = normalize(slopeScore, 'range');
 [rows, cols] = size(roughnessScore);
 
 
