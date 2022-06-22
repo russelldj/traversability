@@ -2,7 +2,7 @@ function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, resolution, r
 %% Generate DEM from point cloud
 
 if nargin <= 5
-    roughness_method = 'roughness';
+    roughness_method = 'srf';
 end
 if nargin <= 6
     roughness_kernel_size = 5;
@@ -69,7 +69,7 @@ elseif roughness_method == "tpi"
 elseif roughness_method == "ruggedness"
     % TODO
 elseif roughness_method == "srf"
-    % TODO
+    roughnessScore = 1 - roughnessScore;
 end
 
 % idxRoughnessScore = roughnessScore < 0.7;
