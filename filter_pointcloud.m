@@ -1,5 +1,6 @@
 function [ground_points, nonground_points] = filter_pointcloud(pc_path, show, csf)
 
+    % Default arguments
     if nargin < 3
         csf = false;
     end

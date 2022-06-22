@@ -30,10 +30,6 @@ function generate_traversability(data_dir, data_name, plot_data, fuzzy, resoluti
     %% Grid Cloud
     [grid_point_cloud, grid_labels_mtx] = grid_cloud(point_cloud_points, data_path, resolution);
 
-    %% Trim Cloud
-    trimmed_grid_cloud = trim_cloud(grid_point_cloud, data_path);
-
-    % %% Digital Elevation Map Fuzzy Index
-
-    map = digital_em(trimmed_grid_cloud, plot_data, fuzzy, resolution);
+    %% Digital Elevation Map Traversability
+    map = digital_em(grid_point_cloud, plot_data, fuzzy, resolution);
 end

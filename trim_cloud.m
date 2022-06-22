@@ -1,4 +1,6 @@
 function [trimmed_cloud] = trim_cloud(grid_point_cloud, pc_path)
+    % This should have been replaced by the method in grid_cloud
+    disp("Deprecated")
     %% Trimming Grid Point Cloud
     base_name = split(pc_path, '.');
     base_name = base_name(1);

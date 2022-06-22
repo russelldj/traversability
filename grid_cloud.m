@@ -67,13 +67,15 @@ function [grid_point_cloud, grid_labels_mtx] = grid_cloud(pc_data, pc_path, reso
         end
 
         % Aggregate the information into a single array with labels
-        grid_point_cloud = zeros([size(pc_data, 1), 4]);
+        grid_point_cloud = zeros([size(pc_data, 1), 5]);
         grid_labels_mtx = zeros(num_x_y);
         num_points_added = 1;
         label_ID = 1;
         num_x = num_x_y(1);
         num_y = num_x_y(2);
 
+        % Loop over the grid and concatenate all the data into one matrix
+        % TODO see if the loops can be removed
         for i = 1:num_x
 
             for j = 1:num_y
@@ -82,10 +84,9 @@ function [grid_point_cloud, grid_labels_mtx] = grid_cloud(pc_data, pc_path, reso
                 num_points = size(current_points, 1);
                 labels = ones(num_points, 1) * label_ID;
 
-                % disp(strcat("Setting num_points = ",string(num_points), " to label = ", string(index)))
                 % Set the points and labels
-                grid_point_cloud(num_points_added:num_points_added + num_points - 1, 1:3) = current_points(:, 1:3);
-                grid_point_cloud(num_points_added:num_points_added + num_points - 1, 4) = labels;
+                grid_point_cloud(num_points_added:num_points_added + num_points - 1, 1:4) = current_points(:, 1:4);
+                grid_point_cloud(num_points_added:num_points_added + num_points - 1, 5) = labels;
                 % Fill this semi-useless variable indicating the id at each
                 % cell
                 grid_labels_mtx(i, j) = label_ID;
@@ -96,14 +97,15 @@ function [grid_point_cloud, grid_labels_mtx] = grid_cloud(pc_data, pc_path, reso
             end
 
         end
-
+        
+        % Remove the empty rows
+        grid_point_cloud = grid_point_cloud(1:(num_points_added-1), 1:5);
         save(gc_data_path, 'grid_point_cloud', 'grid_labels_mtx');
     end
 
     figure
 
-    indx = grid_point_cloud(:, 4);
+    indx = grid_point_cloud(:, 5);
     pcshow(grid_point_cloud(:, 1:3), indx);
     colormap("lines")
-
 end

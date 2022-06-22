@@ -1,6 +1,7 @@
 function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, resolution, roughness_method, roughness_kernel_size)
     %% Generate DEM from point cloud
 
+    % Default arguments
     if nargin <= 5
         roughness_method = 'srf';
     end
@@ -36,17 +37,13 @@ function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, resolution, r
         subplot(1, 2, 1)
         imshow(elevModel, [])
         colorbar()
-        % colormap(gray)
         title("Digital Terrain Model")
         subplot(1, 2, 2)
         imshow(elevModel_labels, [])
         colorbar()
-        % colormap(gray)
         title("Labels")
     end
 
-    %     nonGroundLabels = elevModel_labels == 1;
-    %     elevModel(nonGroundLabels) = nan;
     full_DEM = GRIDobj(X, Y, elevModel);
     ground_DEM = GRIDobj(X, Y, groundModel);
 
@@ -56,10 +53,12 @@ function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, resolution, r
     end
 
     %% Traversability Roughness
-    % Should roughness be computed from the full DEM
+    % TODO Should roughness be computed from the full DEM?
     R = roughness(full_DEM, roughness_method, [roughness_kernel_size, roughness_kernel_size]);
     roughnessScore = R.Z;
-    % Normalize the roughness appropriately
+
+    % Normalize the roughness appropriately so that it lies in the range [0, 1] with
+    % 0 being the smoothest surface
     if roughness_method == "roughness"
         roughnessScore = min(max(roughnessScore / 10, 0), 1);
     elseif roughness_method == "tri"
@@ -72,34 +71,28 @@ function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, resolution, r
         roughnessScore = 1 - roughnessScore;
     end
 
-    % idxRoughnessScore = roughnessScore < 0.7;
-    % roughnessScore(idxRoughnessScore) = 1;
-    %     DEM.Z(idxRoughnessScore) = nan;
-
     %% Traversability Slope
     % Get the slope in radians using an 8-connected grid
     G = gradient8(ground_DEM, 'rad');
     slopeScore = G.Z;
-    %     idxNonGround = elevModel_labels == 1;
-    %     slopeScore(idxNonGround) = 1;
-    % idxSlopeScore = slopeScore >= pi/4;
-    %     DEM.Z(idxSlopeScore) = nan;
-    % slopeScore(idxSlopeScore) = 1;
 
-    figure
-    imshow(full_DEM.Z, [])
-    colorbar()
-    title("DEM Z, min: " + string(min(full_DEM.Z, [], 'all')) + " , max: " + string(max(full_DEM.Z, [], 'all')))
+    % Visualize the slope, roughness, and DEM
+    if false
+        figure
+        imshow(full_DEM.Z, [])
+        colorbar()
+        title("DEM Z, min: " + string(min(full_DEM.Z, [], 'all')) + " , max: " + string(max(full_DEM.Z, [], 'all')))
 
-    figure
-    imshow(slopeScore, [])
-    colorbar()
-    title("slopeScore, min: " + string(min(slopeScore, [], 'all')) + " , max: " + string(max(slopeScore, [], 'all')))
+        figure
+        imshow(slopeScore, [])
+        colorbar()
+        title("slopeScore, min: " + string(min(slopeScore, [], 'all')) + " , max: " + string(max(slopeScore, [], 'all')))
 
-    figure
-    imshow(roughnessScore, [])
-    colorbar()
-    title("roughnessScore, min: " + string(min(roughnessScore, [], 'all')) + " , max: " + string(max(roughnessScore, [], 'all')))
+        figure
+        imshow(roughnessScore, [])
+        colorbar()
+        title("roughnessScore, min: " + string(min(roughnessScore, [], 'all')) + " , max: " + string(max(roughnessScore, [], 'all')))
+    end
 
     if plot_dem_data
         figure
@@ -123,8 +116,4 @@ function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, resolution, r
         title("Fuzzy Grid Map")
     end
 
-    %     inflatedMap = copy(gridMap);
-    %     inflate(inflatedMap,0.5);
-    %     figure;
-    %     show(inflatedMap);
 end

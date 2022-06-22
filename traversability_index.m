@@ -9,14 +9,12 @@ function [gridMap] = traversability_index(slopeScore, roughnessScore, elevModel_
         resolution = 1;
     end
 
-    % TODO Figure out why this clipping is needed
-    disp(slopeScore)
+    % By default, it's mostly based on the slope
     output_score = min(slopeScore, 1);
     is_occupied = slopeScore == 1 | roughnessScore == 1 | elevModel_labels == 1;
     slope_is_nan = isnan(slopeScore);
     output_score(is_occupied) = 1;
     output_score(slope_is_nan) = nan_value;
-    imshow(output_score)
 
     gridMap = occupancyMap(output_score, resolution);
 
