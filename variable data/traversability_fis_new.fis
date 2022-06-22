@@ -21,11 +21,11 @@ MF3='steep':'gauss2mf',[0.1571 0.9425 0.1571 1.571]
 
 [Input2]
 Name='Roughness'
-Range=[0 1]
+Range=[0 20]
 NumMFs=3
-MF1='smooth':'gauss2mf',[0.1 0 0.1 0.2]
-MF2='rough':'gauss2mf',[0.1 0.4 0.1 0.6]
-MF3='rocky':'gauss2mf',[0.1 0.8 0.1 1]
+MF1='smooth':'gauss2mf',[2 0 2 4]
+MF2='rough':'gauss2mf',[2 8 2 12]
+MF3='rocky':'gauss2mf',[2 16 2 20]
 
 [Output1]
 Name='Index'

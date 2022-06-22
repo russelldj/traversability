@@ -1,4 +1,6 @@
 function [gridMap] = traversability_index_fuzzy(slopeScore, roughnessScore, elevModel_labels, resolution)
+% elevModel_labels is something to do with the fraction of ground points
+
 
 % Default arguments
 if nargin < 4
@@ -106,13 +108,23 @@ disp("Calculating Index")
 
 flat_roughness = reshape(roughnessScore, [], 1);
 flat_slope = reshape(slopeScore, [], 1);
-flat_labels = reshape(elevModel_labels, [], 1);
+% flat_labels = reshape(elevModel_labels, [], 1);
+
+%figure
+%imshow(roughnessScore, [])
+%figure
+%imshow(slopeScore, [])
+%figure
+% For some reason they appear transposed
+%imshow(elevModel_labels, [])
 
 valid_roughness = ~isnan(flat_roughness);
 valid_slope = ~isnan(flat_slope);
-valid_labels = flat_labels == 0;
+
+% I'm not sure why this is here
+% valid_labels = flat_labels == 0;
 % TODO should we be checking slope validity which wasn't done previously
-valid_inds = valid_roughness & valid_labels & valid_slope;
+valid_inds = valid_roughness & valid_slope;
 
 valid_roughnesses = flat_roughness(valid_inds);
 valid_slopes = flat_slope(valid_inds);

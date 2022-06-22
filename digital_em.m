@@ -2,7 +2,7 @@ function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, resolution, r
 %% Generate DEM from point cloud
 
 if nargin <= 5
-    roughness_method = 'srf';
+    roughness_method = 'roughness';
     
 end
 if nargin <= 6
@@ -13,6 +13,7 @@ ground_inds = gridPtCloud(:, 4) == 0;
 ground_points = gridPtCloud(ground_inds, 1:5);
 
 elevModel = pc2dem(pointCloud(gridPtCloud(:,1:3)), [resolution, resolution]);
+% Finds what fraction of the points are ground
 elevModel_labels = pc2dem(pointCloud([gridPtCloud(:,1:2), gridPtCloud(:,4)]), [resolution, resolution]);
 
 
@@ -34,11 +35,13 @@ Y = 0:size(elevModel,1)-1;
 if plot_dem_data
     figure
     subplot(1,2,1)
-    imagesc(elevModel)
+    imshow(elevModel, [])
+    colorbar()
     % colormap(gray)
     title("Digital Terrain Model")
     subplot(1,2,2)
-    imagesc(elevModel_labels)
+    imshow(elevModel_labels, [])
+    colorbar()
     % colormap(gray)
     title("Labels")
 end
@@ -54,6 +57,7 @@ end
 
 
 %% Traversability Roughness
+% Should roughness be computed from the full DEM
 R = roughness(full_DEM, roughness_method, [roughness_kernel_size, roughness_kernel_size]);
 roughnessScore = R.Z;
 % idxRoughnessScore = roughnessScore < 0.7;
@@ -72,14 +76,17 @@ slopeScore = G.Z;
 
 figure
 imshow(full_DEM.Z, [])
+colorbar()
 title("DEM Z, min: " + string(min(full_DEM.Z, [], 'all')) + " , max: " + string(max(full_DEM.Z, [], 'all')))
 
 figure
 imshow(slopeScore, [])
+colorbar()
 title("slopeScore, min: " + string(min(slopeScore, [], 'all')) + " , max: " + string(max(slopeScore, [], 'all')))
 
 figure
 imshow(roughnessScore, [])
+colorbar()
 title("roughnessScore, min: " + string(min(roughnessScore, [], 'all')) + " , max: " + string(max(roughnessScore, [], 'all')))
 
 if plot_dem_data
