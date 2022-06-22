@@ -3,7 +3,6 @@ function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, resolution, r
 
 if nargin <= 5
     roughness_method = 'roughness';
-    
 end
 if nargin <= 6
     roughness_kernel_size = 5;
@@ -60,6 +59,19 @@ end
 % Should roughness be computed from the full DEM
 R = roughness(full_DEM, roughness_method, [roughness_kernel_size, roughness_kernel_size]);
 roughnessScore = R.Z;
+% Normalize the roughness appropriately 
+if roughness_method == "roughness"
+    roughnessScore = min(max(roughnessScore/10, 0), 1);
+elseif roughness_method == "tri"
+    % TODO
+elseif roughness_method == "tpi"
+    % TODO
+elseif roughness_method == "ruggedness"
+    % TODO
+elseif roughness_method == "srf"
+    % TODO
+end
+
 % idxRoughnessScore = roughnessScore < 0.7;
 % roughnessScore(idxRoughnessScore) = 1;
 %     DEM.Z(idxRoughnessScore) = nan;
@@ -106,7 +118,7 @@ if ~fuzzy
     title("Heuristic Grid Map")
 else
     disp("Fuzzy Traversability DEM")
-    gridMap = traversability_index_fuzzy(slopeScore, roughnessScore, elevModel_labels);
+    gridMap = traversability_index_fuzzy(slopeScore, roughnessScore);
     figure;
     show(gridMap);
     title("Fuzzy Grid Map")

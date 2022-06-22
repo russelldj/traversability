@@ -34,8 +34,6 @@ function valid_points = index_cloud_and_crop(inds)
   
 end
 
-
-
 %% Dividing Point Cloud in Grid
 base_name = split(pc_path, '.');
 base_name = base_name(1);

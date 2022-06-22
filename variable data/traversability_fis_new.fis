@@ -16,16 +16,16 @@ Name='Slope'
 Range=[0 1.57079632679]
 NumMFs=3
 MF1='flat':'gauss2mf',[0.1571 0 0.07854 0.07854]
-MF2='sloped':'gauss2mf',[0.07854 0.3142 0.1571 0.7069]
-MF3='steep':'gauss2mf',[0.1571 0.9425 0.1571 1.571]
+MF2='sloped':'gauss2mf',[0.0785 0.294778951058482 0.173 0.525]
+MF3='steep':'gauss2mf',[0.123 0.84051668147022 0.157 1.57]
 
 [Input2]
 Name='Roughness'
-Range=[0 20]
+Range=[0 1]
 NumMFs=3
-MF1='smooth':'gauss2mf',[2 0 2 4]
-MF2='rough':'gauss2mf',[2 8 2 12]
-MF3='rocky':'gauss2mf',[2 16 2 20]
+MF1='smooth':'gauss2mf',[0.00842 -0.0345 0.126092129535166 0.165181885671863]
+MF2='rough':'gauss2mf',[0.138 0.483 0.135853753595283 0.517817371937639]
+MF3='rocky':'gauss2mf',[0.153808337452093 0.894951744617669 0.1 0.995]
 
 [Output1]
 Name='Index'
