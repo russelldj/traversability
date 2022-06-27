@@ -1,8 +1,8 @@
-function [gridMap] = traversability_index(slopeScore, roughnessScore, elevModel_labels, resolution, nan_value)
+function [occupancy, gridMap] = traversability_index(slopeScore, roughnessScore, elevModel_labels, resolution, nan_value)
 
     % Default values
     if nargin < 5
-        nan_value = 0.5;
+        nan_value = 1;
     end
 
     if nargin < 4
@@ -10,12 +10,12 @@ function [gridMap] = traversability_index(slopeScore, roughnessScore, elevModel_
     end
 
     % By default, it's mostly based on the slope
-    output_score = min(slopeScore, 1);
+    occupancy = min(slopeScore, 1);
     is_occupied = slopeScore == 1 | roughnessScore == 1 | elevModel_labels == 1;
     slope_is_nan = isnan(slopeScore);
-    output_score(is_occupied) = 1;
-    output_score(slope_is_nan) = nan_value;
+    occupancy(is_occupied) = 1;
+    occupancy(slope_is_nan) = nan_value;
 
-    gridMap = occupancyMap(output_score, resolution);
+    gridMap = occupancyMap(occupancy, resolution);
 
 end

@@ -10,6 +10,9 @@ function generate_traversability( ...
         show_plots, ...
         show_pointcloud)
 
+    % CLose all other figure by default
+    close all;
+
     %% Deal with default arguments
     if nargin < 10
         show_pointcloud = true;

@@ -1,4 +1,4 @@
-function [gridMap] = traversability_index_fuzzy(slopeScore, roughnessScore, resolution)
+function [occupancy, gridMap] = traversability_index_fuzzy(slopeScore, roughnessScore, resolution)
     % Default arguments
     if nargin < 4
         resolution = 1;
@@ -30,12 +30,12 @@ function [gridMap] = traversability_index_fuzzy(slopeScore, roughnessScore, reso
     % Traversability is defined as 1 - the cost
     traversability_score = 1 - fis_outputs;
 
-    % Set the output map to all zeros
-    output_index = zeros(rows * cols, 1);
+    % Set the output map to all ones
+    occupancy = ones(rows * cols, 1);
     % And then fill in the valid results
-    output_index(valid_inds) = traversability_score;
+    occupancy(valid_inds) = fis_outputs;
     % Reshape back to a 2-D grid
-    output_index = reshape(output_index, [rows, cols]);
+    occupancy = reshape(occupancy, [rows, cols]);
     % Create an occupancy map from this data
-    gridMap = occupancyMap(output_index, resolution);
+    gridMap = occupancyMap(occupancy, resolution);
 end

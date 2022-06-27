@@ -102,18 +102,18 @@ function [gridMap] = digital_em(gridPtCloud, plot_dem_data, fuzzy, resolution, r
     end
 
     %% Traversability Index
+
+    figure;
+
     if ~fuzzy
-        disp("Heuristic Traversability DEM")
-        gridMap = traversability_index(slopeScore, roughnessScore, elevModel_labels, resolution);
-        figure;
-        show(gridMap);
-        title("Heuristic Grid Map")
+        [occupancy, gridMap] = traversability_index(slopeScore, roughnessScore, elevModel_labels, resolution);
+        title_str = "Heuristic Grid Map Traversability";
     else
-        disp("Fuzzy Traversability DEM")
-        gridMap = traversability_index_fuzzy(slopeScore, roughnessScore);
-        figure;
-        show(gridMap);
-        title("Fuzzy Grid Map")
+        [occupancy, gridMap] = traversability_index_fuzzy(slopeScore, roughnessScore);
+        title_str = "Fuzzy Grid Map Traversability";
     end
 
+    imshow(1 - occupancy)
+    colorbar()
+    title(title_str)
 end
