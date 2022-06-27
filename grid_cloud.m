@@ -1,15 +1,19 @@
-function [grid_point_cloud, grid_labels_mtx] = grid_cloud(pc_data, pc_path, resolution, force_reload, crop, crop_height)
+function [grid_point_cloud, grid_labels_mtx] = grid_cloud(pc_data, pc_path, resolution, crop_height, show, crop, force_reload)
     % Default argument
-    if nargin < 6
-        crop_height = 3;
+    if nargin < 7
+        force_reload = true;
     end
 
-    if nargin < 5
+    if nargin < 6
         crop = true;
     end
 
+    if nargin < 5
+        show = true;
+    end
+
     if nargin < 4
-        force_reload = true;
+        crop_height = 3;
     end
 
     % Indexes a global variable point cloud
@@ -97,15 +101,17 @@ function [grid_point_cloud, grid_labels_mtx] = grid_cloud(pc_data, pc_path, reso
             end
 
         end
-        
+
         % Remove the empty rows
-        grid_point_cloud = grid_point_cloud(1:(num_points_added-1), 1:5);
+        grid_point_cloud = grid_point_cloud(1:(num_points_added - 1), 1:5);
         save(gc_data_path, 'grid_point_cloud', 'grid_labels_mtx');
     end
 
-    figure
+    if show
+        figure
+        indx = grid_point_cloud(:, 5);
+        pcshow(grid_point_cloud(:, 1:3), indx);
+        colormap("lines")
+    end
 
-    indx = grid_point_cloud(:, 5);
-    pcshow(grid_point_cloud(:, 1:3), indx);
-    colormap("lines")
 end

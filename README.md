@@ -32,9 +32,11 @@ This requires the following toolboxes
 
 ## Usage
 1. In MATLAB add all folders and sub-folders to Path
-2. Use `generate_traersability` function to process point cloud data as :  
+2. Use `generate_traersability` function to process point cloud data with all the default arguments. You can change to experiment:  
 ```matlab
-generate_traversability('pilot data', '45_degree_merged')
+generate_traversability('point data', 'fullCloud_labeled', true, 0.3, "srf", 3, 3, false, true, true)
+```
+```
 ```
 
 ## Plots

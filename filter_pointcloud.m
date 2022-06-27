@@ -28,6 +28,7 @@ function [ground_points, nonground_points] = filter_pointcloud(pc_path, show, cs
 
         if csf
             %% CSF
+            % TODO look at these parameters
             [ground_index, nonground_index] = csf_filtering(point_cloud, 3, true, 1, 0.5, 500, 0.65);
             groundPoints = point_cloud(ground_index, :);
             nonGroundPoints = point_cloud(nonground_index, :);
@@ -35,7 +36,6 @@ function [ground_points, nonground_points] = filter_pointcloud(pc_path, show, cs
             nonground_cloud = pointCloud(nonGroundPoints);
         else
             %% SMRF
-
             full_cloud = pointCloud(point_cloud(:, 1:3));
             [ground_points_index, nonground_cloud, ground_cloud] = segmentGroundSMRF(full_cloud);
 
