@@ -62,7 +62,7 @@ function [grid_point_cloud, grid_labels_mtx] = grid_cloud(pc_data, pc_path, reso
         num_x_y = fix((point_maxes(1:2) - point_mins(1:2)) / resolution);
 
         % Actually compute gridding with optimized library function
-        bins = pcbin(pointCloud(pc_data(:, 1:3)), [num_x_y(1), num_x_y(1), 1], spatial_extent);
+        bins = pcbin(pointCloud(pc_data(:, 1:3)), [num_x_y(1), num_x_y(2), 1], spatial_extent);
         % Obtain the points from the indices
         if crop
             points_per_bin = cellfun(@index_cloud_and_crop, bins, 'UniformOutput', false);
